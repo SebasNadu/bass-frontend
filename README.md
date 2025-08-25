@@ -1,69 +1,158 @@
-# React + TypeScript + Vite
+# BASS frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## `useApi` Hook Documentation
 
-Currently, two official plugins are available:
+A reusable React hook for handling API requests with **fetch**, including:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ✅ Works with `GET`, `POST`, `PUT`, `DELETE`, etc.
+- ✅ Automatic JSON parsing
+- ✅ `loading`, `error`, and `data` states
+- ✅ Optional `autoFetch` for initial load
+- ✅ Safe cancellation with `AbortController`
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🔧 Installation
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+No extra dependencies are required.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+1. GET
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```ts
+import { useApi } from "@/hooks/useApi";
+
+
+⸻
+
+🚀 Usage Examples
+
+1. GET Request with Auto Fetch
+
+const { data, loading, error } = useApi<User[]>("/api/users", {
+  autoFetch: true,
+});
+
+if (loading) return <p>Loading...</p>;
+if (error) return <p>Error: {error.message}</p>;
+
+return (
+  <ul>
+    {data?.map((user) => (
+      <li key={user.id}>{user.name}</li>
+    ))}
+  </ul>
+);
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- autoFetch: true → runs once when the component mounts
+- data → contains JSON response
+- loading → shows when fetch is running
+- error → holds error if request fails
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+⸻
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. POST Request (Manual Execution)
+
+```ts
+const { data, loading, error, execute } = useApi<User, Partial<User>>(
+"/api/users",
+{ method: "POST" }
+);
+
+const addUser = () => {
+execute({
+body: { name: "Sebas", email: "<test@example.com>" },
+});
+};
+
+return (
+
+  <div>
+    <button onClick={addUser} disabled={loading}>
+      Add User
+    </button>
+    {loading && <p>Saving...</p>}
+    {error && <p>Error: {error.message}</p>}
+    {data && <p>Created: {data.name}</p>}
+  </div>
+);
 ```
+
+- execute() triggers request manually
+- body object is automatically JSON.stringified
+- Can override method, headers, body at call-time
+
+⸻
+
+3. Overriding Options Per Call
+
+```ts
+const { execute } = useApi("/api/users");
+
+// Custom GET with headers
+execute({
+  headers: { Authorization: "Bearer mytoken" },
+});
+
+// POST with body
+execute({
+  method: "POST",
+  body: { name: "New User" },
+});
+```
+
+⸻
+
+4. Handling AbortController (Cancellation)
+
+Every request inside useApi uses an AbortController.
+If the request is canceled (e.g., component unmounts), the error is ignored.
+
+Example with useEffect cleanup:
+
+```ts
+const { execute } = useApi("/api/data");
+
+useEffect(() => {
+  const controller = new AbortController();
+
+  execute({
+    headers: { Authorization: "Bearer mytoken" },
+    body: { filter: "active" },
+  });
+
+  return () => controller.abort(); // cancel on unmount
+}, [execute]);
+```
+
+⸻
+
+📖 API Reference
+
+```ts
+useApi<T, B>(url, options?)
+```
+
+### Parameters
+
+- url: string – API endpoint.
+- options: UseApiOptions<B>
+- method?: string – HTTP method (default "GET").
+- headers?: HeadersInit – Custom headers.
+- body?: B – Request body (object/string).
+- autoFetch?: boolean – Auto-executes once on mount.
+
+### Returns: UseApiResult<T, B>
+
+- data: T | null – Response JSON.
+- loading: boolean – Loading state.
+- error: Error | null – Error object if failed.
+- execute(overrideOptions?: UseApiOptions<B>): Promise<void> – Manually executes request.
+
+⸻
+
+## Notes
+
+- For JSON requests, Content-Type: application/json is automatically added.
+- AbortController prevents state updates if the request is canceled.
+- Errors of type "AbortError" are silently ignored.
