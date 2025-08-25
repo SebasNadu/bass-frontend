@@ -7,9 +7,13 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <>
-      <p>navbar</p>
-      {children}
-      <p>footer</p>
+      <div className="flex flex-col min-h-screen">
+        <div>navbar</div>
+
+        <div className="flex justify-center items-center p-4">{children}</div>
+
+        <div>footer</div>
+      </div>
     </>
   );
 }
