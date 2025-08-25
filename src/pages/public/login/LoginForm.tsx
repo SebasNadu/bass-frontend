@@ -47,7 +47,7 @@ export default function App() {
         }}
       />
 
-      <Button type="submit" variant="bordered">
+      <Button color="primary" type="submit" variant="ghost">
         Submit
       </Button>
     </Form>

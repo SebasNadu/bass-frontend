@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 /*heroUI*/
 @plugin '../hero.ts';
 /* Note: You may need to change the path to fit your project structure */
