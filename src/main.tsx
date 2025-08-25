@@ -1,13 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { AppRouter } from "@/router/AppRouter";
 import "./index.css";
-import App from "./App.tsx";
+import App from "@/App.tsx";
+import { HeroUIProvider } from "@heroui/react";
+import { AppRouter } from "@/router/AppRouter";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App>
-      <AppRouter />
-    </App>
-  </StrictMode>,
+    <HeroUIProvider>
+      <App>
+        <AppRouter />
+      </App>
+    </HeroUIProvider>
+  </StrictMode>
 );
