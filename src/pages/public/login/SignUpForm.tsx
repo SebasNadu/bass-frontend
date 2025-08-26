@@ -1,15 +1,8 @@
 import { Form, Input, Button } from "@heroui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectItem } from "@heroui/react";
 
-// these will be fetched from endpoint
-const tagOptions = [
-  { id: 1, name: "Healthy" },
-  { id: 2, name: "Vegan" },
-  { id: 3, name: "Hipster" },
-];
-
-// this stays like this
+// Define day options
 const dayOptions = [
   { name: "MONDAY", displayName: "Monday" },
   { name: "TUESDAY", displayName: "Tuesday" },
@@ -26,15 +19,94 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [tagsId, setTagsId] = useState<Array<number>>([]);
   const [days, setDays] = useState<Array<string>>([]);
+  const [testimonial, setTestimonial] = useState("");
+  const [tagOptions, setTagOptions] = useState<
+    Array<{ id: number; name: string }>
+  >([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const fetchTags = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/api/tags",
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch tags");
+        }
+
+        const data = await response.json();
+        setTagOptions(data);
+      } catch (err) {
+        setError("Error fetching tags");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTags();
+  }, []);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (days.length !== 2) {
       alert("Please select exactly 2 days.");
       return;
     }
-    console.log("Selected tags:", tagsId);
-    console.log("Selected days:", days);
+
+    const payload = {
+      name,
+      email,
+      password,
+      testimonial,
+      freedomDays: days,
+      tagIds: tagsId,
+    };
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(
+        import.meta.env.VITE_API_URL + "/api/members/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
+
+      const data = await response.json();
+      console.log("Registration successful:", data);
+
+      setName("");
+      setEmail("");
+      setPassword("");
+      setTestimonial("");
+      setTagsId([]);
+      setDays([]);
+
+      alert("Registration successful!");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An error occurred";
+      setError(message);
+      console.error("Registration error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTagSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -80,7 +152,7 @@ export default function App() {
         onChange={(e) => setEmail(e.target.value)}
         validate={(value) => {
           if (!value.includes("@")) {
-            return "It must be  valid email";
+            return "It must be a valid email";
           }
         }}
       />
@@ -100,19 +172,41 @@ export default function App() {
         }}
       />
 
+      <Input
+        isRequired
+        label="Testimonial"
+        labelPlacement="outside"
+        name="testimonial"
+        placeholder="Write a short testimonial"
+        value={testimonial}
+        onChange={(e) => setTestimonial(e.target.value)}
+        validate={(value) => {
+          if (value.length < 5) {
+            return "Testimonial must be at least 5 characters";
+          }
+        }}
+      />
+
+      {/* Tag Selection */}
       <div className="flex w-full max-w-xs flex-col gap-2 mt-4">
-        <Select
-          className="max-w-xs"
-          label="Preferences"
-          placeholder="Select tags"
-          selectedKeys={new Set(tagsId.map((id) => id.toString()))}
-          selectionMode="multiple"
-          onChange={handleTagSelect}
-        >
-          {tagOptions.map((tag) => (
-            <SelectItem key={tag.id}>{tag.name}</SelectItem>
-          ))}
-        </Select>
+        {loading ? (
+          <p>Loading tags...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <Select
+            className="max-w-xs"
+            label="Preferences"
+            placeholder="Select tags"
+            selectedKeys={new Set(tagsId.map((id) => id.toString()))}
+            selectionMode="multiple"
+            onChange={handleTagSelect}
+          >
+            {tagOptions.map((tag) => (
+              <SelectItem key={tag.id}>{tag.name}</SelectItem>
+            ))}
+          </Select>
+        )}
         <p className="text-small text-default-500 mt-2">
           Selected tags:{" "}
           {tagsId
@@ -121,6 +215,7 @@ export default function App() {
         </p>
       </div>
 
+      {/* Day Selection */}
       <div className="flex w-full max-w-xs flex-col gap-2 mt-4">
         <Select
           className="max-w-xs"
