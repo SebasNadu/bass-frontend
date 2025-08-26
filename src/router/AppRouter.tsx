@@ -6,6 +6,7 @@ import { RoutesWithNotFound } from "./RoutesWithNotFound";
 import { AppRoutes } from "@/models";
 
 import Home from "@/pages/private/home/HomePage";
+import MealPage from "@/pages/private/meal/MealPage";
 
 export const AppRouter = () => {
   return (
@@ -13,6 +14,7 @@ export const AppRouter = () => {
       <RoutesWithNotFound>
         <Route path="/" element={<Navigate to={AppRoutes.private.home} />} />
         <Route path={AppRoutes.private.home} element={<Home />} />
+        <Route path={AppRoutes.private.meal} element={<MealPage />} />
         <Route path={AppRoutes.login} element={<Login />} />
         <Route element={<PrivateGuard />}>
           <Route

@@ -5,22 +5,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { BASE_URL } from "@/config/api";
-
-// Types
-interface TagDTO {
-  id: number;
-  name: string;
-}
-
-interface MealResponseDTO {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  imageUrl: string;
-  description: string;
-  tags: TagDTO[];
-}
+import type { MealResponseDTO } from "@/types";
 
 // Carousel config
 const sliderSettings = {
@@ -77,7 +62,7 @@ export default function HomePage() {
         <Slider {...sliderSettings}>
           {items.map((meal) => (
             <div key={meal.id} className="px-2">
-              <Link to={`/meals/${meal.id}`}>
+              <Link to={`/meals/${meal.id}`} state={{ meal }}>
                 <Card className="hover:scale-105 transition-transform cursor-pointer">
                   <CardHeader className="p-0">
                     <Image
