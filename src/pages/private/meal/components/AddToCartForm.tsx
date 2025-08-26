@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Button } from "@heroui/react";
 import { BASE_URL } from "@/config/api";
+
 import type { CartItemRequestDTO } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
+
+// TODO: redircet to cart page after adding item, if it is necessary
+// import { useNavigate } from "react-router-dom";
 
 export function AddToCartForm({
   mealId,
@@ -13,6 +18,8 @@ export function AddToCartForm({
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const { isAuthenticated, token } = useAuth();
+  // const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +41,10 @@ export function AddToCartForm({
 
       const response = await fetch(`${BASE_URL}/api/cart`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: isAuthenticated ? `Bearer ${token}` : "",
+        },
         body: JSON.stringify(payload),
         credentials: "include",
       });
@@ -45,6 +55,7 @@ export function AddToCartForm({
 
       const json = await response.json();
       setMessage(`Added to cart! (Quantity: ${json.quantity})`);
+      // navigate("/cart");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setMessage(`Error: ${err.message}`);
