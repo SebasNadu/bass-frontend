@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route } from "react-router-dom";
 import Login from "@/pages/public/login/Login";
 import { PrivateGuard } from "./guard/PrivateGuard";
 import { PrivateRouter } from "./PrivateRouter";
+import  PrivateTest  from "@/pages/private/PrivateTest";
 import { RoutesWithNotFound } from "./RoutesWithNotFound";
 import { AppRoutes } from "@/models";
 
@@ -16,6 +17,7 @@ export const AppRouter = () => {
         <Route path={AppRoutes.private.home} element={<Home />} />
         <Route path={AppRoutes.private.meal} element={<MealPage />} />
         <Route path={AppRoutes.login} element={<Login />} />
+        <Route path="/test" element={<PrivateTest />} />
         <Route element={<PrivateGuard />}>
           <Route
             path={`${AppRoutes.private.home}/*`}
