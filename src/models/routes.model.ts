@@ -4,5 +4,6 @@ export const AppRoutes = {
   private: {
     home: "/home",
     meal: "/meals/:id",
+    profile: "/profile",
   },
 };
