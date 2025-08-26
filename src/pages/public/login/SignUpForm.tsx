@@ -19,6 +19,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [tagsId, setTagsId] = useState<Array<number>>([]);
   const [days, setDays] = useState<Array<string>>([]);
+  const [testimonial, setTestimonial] = useState("");
   const [tagOptions, setTagOptions] = useState<
     Array<{ id: number; name: string }>
   >([]);
@@ -31,7 +32,9 @@ export default function App() {
       setError(null);
 
       try {
-        const response = await fetch(import.meta.env.VITE_API_URL + "/tags");
+        const response = await fetch(
+          import.meta.env.VITE_API_URL + "/api/tags",
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch tags");
         }
@@ -49,7 +52,7 @@ export default function App() {
     fetchTags();
   }, []);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (days.length !== 2) {
@@ -57,8 +60,53 @@ export default function App() {
       return;
     }
 
-    console.log("Selected tags:", tagsId);
-    console.log("Selected days:", days);
+    const payload = {
+      name,
+      email,
+      password,
+      testimonial,
+      freedomDays: days,
+      tagIds: tagsId,
+    };
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(
+        import.meta.env.VITE_API_URL + "/api/members/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
+
+      const data = await response.json();
+      console.log("Registration successful:", data);
+
+      setName("");
+      setEmail("");
+      setPassword("");
+      setTestimonial("");
+      setTagsId([]);
+      setDays([]);
+
+      alert("Registration successful!");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An error occurred";
+      setError(message);
+      console.error("Registration error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTagSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -120,6 +168,21 @@ export default function App() {
         validate={(value) => {
           if (value.length == 0) {
             return "Introduce a valid password";
+          }
+        }}
+      />
+
+      <Input
+        isRequired
+        label="Testimonial"
+        labelPlacement="outside"
+        name="testimonial"
+        placeholder="Write a short testimonial"
+        value={testimonial}
+        onChange={(e) => setTestimonial(e.target.value)}
+        validate={(value) => {
+          if (value.length < 5) {
+            return "Testimonial must be at least 5 characters";
           }
         }}
       />
