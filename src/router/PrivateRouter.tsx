@@ -1,5 +1,5 @@
 import { Route } from "react-router-dom";
-import Home from "@/pages/private/home/Home";
+import Home from "@/pages/private/home/HomePage";
 import { RoutesWithNotFound } from "./RoutesWithNotFound";
 import { AppRoutes } from "@/models";
 
