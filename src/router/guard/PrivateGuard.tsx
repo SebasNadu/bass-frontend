@@ -1,7 +1,13 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { AppRoutes } from "@/models";
 
 export const PrivateGuard = () => {
-  const token = localStorage.getItem("token");
+  const { isAuthenticated } = useAuth();
 
-  return token ? <Outlet /> : <Navigate to="/login" replace />;
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to={AppRoutes.login} replace />
+  );
 };

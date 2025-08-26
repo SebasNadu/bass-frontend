@@ -1,4 +1,5 @@
 export const AppRoutes = {
+  root: "/",
   login: "/login",
   private: {
     home: "/home",

@@ -11,11 +11,11 @@ createRoot(document.getElementById("root")!).render(
     <HeroUIProvider>
       <main className="dark text-foreground bg-background page-layout min-h-screen min-w-screen">
         <AuthProvider>
-        <App>
-          <AppRouter />
-        </App>
+          <App>
+            <AppRouter />
+          </App>
         </AuthProvider>
       </main>
     </HeroUIProvider>
-  </StrictMode>
+  </StrictMode>,
 );

@@ -1,6 +1,7 @@
 import { Form, Input, Button } from "@heroui/react";
 import { useState } from "react";
 import { useAuth } from "../../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -9,6 +10,7 @@ export default function LoginForm() {
   const [error, setError] = useState("");
 
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,6 +41,7 @@ export default function LoginForm() {
       if (token) {
         login(token);
         console.log("Token saved in context:", token);
+        navigate("/home");
       } else {
         throw new Error("Token not found in response.");
       }
