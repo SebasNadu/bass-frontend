@@ -10,8 +10,11 @@ export default function Login() {
   };
 
   return (
-    <div className="form-container">
-      <button onClick={toggleForm} className="toggle-button">
+    <div className="form-container flex flex-col items-center justify-center">
+      <button
+        onClick={toggleForm}
+        className="toggle-button py-4 cursor-pointer"
+      >
         {showSignUp
           ? "Already have an account? Log in"
           : "Don’t have an account? Sign up"}

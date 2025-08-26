@@ -1,18 +1,12 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
-
-type AuthContextType = {
-  isAuthenticated: boolean;
-  token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
-};
+import type { AuthContextType } from "@/types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem("authToken")
+    localStorage.getItem("authToken"),
   );
 
   const login = (newToken: string) => {

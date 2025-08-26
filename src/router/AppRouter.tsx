@@ -7,22 +7,19 @@ import { RoutesWithNotFound } from "./RoutesWithNotFound";
 import { AppRoutes } from "@/models";
 import ProfilePage from "@/pages/private/profile/ProfilePage";
 
-import Home from "@/pages/private/home/HomePage";
-
 export const AppRouter = () => {
   return (
     <BrowserRouter>
       <RoutesWithNotFound>
-        <Route path="/" element={<Navigate to={AppRoutes.private.home} />} />
-        <Route path={AppRoutes.private.home} element={<Home />} />
+        <Route
+          path={AppRoutes.root}
+          element={<Navigate to={AppRoutes.private.home} />}
+        />
         <Route path={AppRoutes.login} element={<Login />} />
         <Route path="/test" element={<PrivateTest />} />
         <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
         <Route element={<PrivateGuard />}>
-          <Route
-            path={`${AppRoutes.private.home}/*`}
-            element={<PrivateRouter />}
-          />
+          <Route path={`${AppRoutes.root}*`} element={<PrivateRouter />} />
         </Route>
       </RoutesWithNotFound>
     </BrowserRouter>
