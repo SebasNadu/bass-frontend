@@ -5,14 +5,26 @@
 @source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @custom-variant dark (&:is(.dark *));
 
+@plugin './config/hero.ts';
+/* Note: You may need to change the path to fit your project structure */
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+/* @config "../tailwind.config.js"; */
+
+@font-face {
+  font-family: "generalSans";
+  src: url("@/assets/fonts/GeneralSans-Variable.woff2")
+    format("woff2-variations");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: "generalSans", sydstem-ui, Avenir, Helvetica, Arial, sans-serif;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -27,130 +39,437 @@
   text-wrap: pretty;
 }
 
-/* Piccalilli CSS Reset https://piccalil.li/blog/a-more-modern-css-reset/ */
-/* Box sizing rules */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Prevent font size inflation */
-html {
-  -moz-text-size-adjust: none;
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
-
-  interpolate-size: allow-keywords;
-}
-
-/* Remove default margin in favour of better control in authored CSS */
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote,
-dl,
-dd {
-  margin-block-end: 0;
-}
-
-/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-ul[role="list"],
-ol[role="list"] {
-  list-style: none;
-}
-
-/* Set core body defaults */
 body {
-  min-height: 100vh;
-  line-height: 1.5;
+  margin: 0;
+  place-items: center;
+  min-width: 100dvw;
+  min-height: 100dvh;
 }
 
-/* Set shorter line heights on headings and interactive elements */
-h1,
-h2,
-h3,
-h4,
-button,
-input,
-label {
-  line-height: 1.1;
-  font-family: var(--font-general-sans);
+:root {
+  /* @link https://utopia.fyi/type/calculator?c=320,16,1.2,1600,22,1.333,6,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l|3xs-2xs|3xs-xs|3xs-s|2xs-xs|2xs-s|2xs-m|xs-s|xs-m|xs-l|s-m|s-l|s-xl|m-l|m-xl|m-2xl|l-xl|l-2xl|l-3xl|xl-2xl|xl-3xl|2xl-3xl&g=s,l,xl,12 */
+  /* Step -2: 11.1111px → 12.3812px */
+  --step--2: clamp(0.6944rem, 0.6746rem + 0.0992vw, 0.7738rem);
+  /* Step -1: 13.3333px → 16.5041px */
+  --step--1: clamp(0.8333rem, 0.7838rem + 0.2477vw, 1.0315rem);
+  /* Step 0: 16px → 22px */
+  --step-0: clamp(1rem, 0.9063rem + 0.4688vw, 1.375rem);
+  /* Step 1: 19.2px → 29.326px */
+  --step-1: clamp(1.2rem, 1.0418rem + 0.7911vw, 1.8329rem);
+  /* Step 2: 23.04px → 39.0916px */
+  --step-2: clamp(1.44rem, 1.1892rem + 1.254vw, 2.4432rem);
+  /* Step 3: 27.648px → 52.109px */
+  --step-3: clamp(1.728rem, 1.3458rem + 1.911vw, 3.2568rem);
+  /* Step 4: 33.1776px → 69.4614px */
+  --step-4: clamp(2.0736rem, 1.5067rem + 2.8347vw, 4.3413rem);
+  /* Step 5: 39.8131px → 92.592px */
+  --step-5: clamp(2.4883rem, 1.6637rem + 4.1233vw, 5.787rem);
+  /* Step 6: 47.7757px → 123.4251px */
+  --step-6: clamp(2.986rem, 1.804rem + 5.9101vw, 7.7141rem);
+
+  /* @link https://utopia.fyi/space/calculator?c=320,16,1.2,1600,22,1.333,6,2,&s=0.75|0.5|0.25,1.5|2|3|4|6|7,s-l|3xs-2xs|3xs-xs|3xs-s|2xs-xs|2xs-s|2xs-m|xs-s|xs-m|xs-l|s-m|s-l|s-xl|m-l|m-xl|m-2xl|l-xl|l-2xl|l-3xl|xl-2xl|xl-3xl|2xl-3xl|2xl-4xl|l-3xl|l-4xl|xl-4xl&g=s,l,xl,12 */
+  /* Space 3xs: 4px → 6px */
+  --space-3xs: clamp(0.25rem, 0.2188rem + 0.1563vw, 0.375rem);
+  /* Space 2xs: 8px → 11px */
+  --space-2xs: clamp(0.5rem, 0.4531rem + 0.2344vw, 0.6875rem);
+  /* Space xs: 12px → 17px */
+  --space-xs: clamp(0.75rem, 0.6719rem + 0.3906vw, 1.0625rem);
+  /* Space s: 16px → 22px */
+  --space-s: clamp(1rem, 0.9063rem + 0.4688vw, 1.375rem);
+  /* Space m: 24px → 33px */
+  --space-m: clamp(1.5rem, 1.3594rem + 0.7031vw, 2.0625rem);
+  /* Space l: 32px → 44px */
+  --space-l: clamp(2rem, 1.8125rem + 0.9375vw, 2.75rem);
+  /* Space xl: 48px → 66px */
+  --space-xl: clamp(3rem, 2.7188rem + 1.4063vw, 4.125rem);
+  /* Space 2xl: 64px → 88px */
+  --space-2xl: clamp(4rem, 3.625rem + 1.875vw, 5.5rem);
+  /* Space 3xl: 96px → 132px */
+  --space-3xl: clamp(6rem, 5.4375rem + 2.8125vw, 8.25rem);
+  /* Space 4xl: 112px → 154px */
+  --space-4xl: clamp(7rem, 6.3438rem + 3.2813vw, 9.625rem);
+
+  /* One-up pairs */
+  /* Space 3xs-2xs: 4px → 11px */
+  --space-3xs-2xs: clamp(0.25rem, 0.1406rem + 0.5469vw, 0.6875rem);
+  /* Space 2xs-xs: 8px → 17px */
+  --space-2xs-xs: clamp(0.5rem, 0.3594rem + 0.7031vw, 1.0625rem);
+  /* Space xs-s: 12px → 22px */
+  --space-xs-s: clamp(0.75rem, 0.5938rem + 0.7813vw, 1.375rem);
+  /* Space s-m: 16px → 33px */
+  --space-s-m: clamp(1rem, 0.7344rem + 1.3281vw, 2.0625rem);
+  /* Space m-l: 24px → 44px */
+  --space-m-l: clamp(1.5rem, 1.1875rem + 1.5625vw, 2.75rem);
+  /* Space l-xl: 32px → 66px */
+  --space-l-xl: clamp(2rem, 1.4688rem + 2.6563vw, 4.125rem);
+  /* Space xl-2xl: 48px → 88px */
+  --space-xl-2xl: clamp(3rem, 2.375rem + 3.125vw, 5.5rem);
+  /* Space 2xl-3xl: 64px → 132px */
+  --space-2xl-3xl: clamp(4rem, 2.9375rem + 5.3125vw, 8.25rem);
+  /* Space 3xl-4xl: 96px → 154px */
+  --space-3xl-4xl: clamp(6rem, 5.0938rem + 4.5313vw, 9.625rem);
+
+  /* Custom pairs */
+  /* Space s-l: 16px → 44px */
+  --space-s-l: clamp(1rem, 0.5625rem + 2.1875vw, 2.75rem);
+  /* Space 3xs-2xs: 4px → 11px */
+  --space-3xs-2xs: clamp(0.25rem, 0.1406rem + 0.5469vw, 0.6875rem);
+  /* Space 3xs-xs: 4px → 17px */
+  --space-3xs-xs: clamp(0.25rem, 0.0469rem + 1.0156vw, 1.0625rem);
+  /* Space 3xs-s: 4px → 22px */
+  --space-3xs-s: clamp(0.25rem, -0.0312rem + 1.4063vw, 1.375rem);
+  /* Space 2xs-xs: 8px → 17px */
+  --space-2xs-xs: clamp(0.5rem, 0.3594rem + 0.7031vw, 1.0625rem);
+  /* Space 2xs-s: 8px → 22px */
+  --space-2xs-s: clamp(0.5rem, 0.2813rem + 1.0938vw, 1.375rem);
+  /* Space 2xs-m: 8px → 33px */
+  --space-2xs-m: clamp(0.5rem, 0.1094rem + 1.9531vw, 2.0625rem);
+  /* Space xs-s: 12px → 22px */
+  --space-xs-s: clamp(0.75rem, 0.5938rem + 0.7813vw, 1.375rem);
+  /* Space xs-m: 12px → 33px */
+  --space-xs-m: clamp(0.75rem, 0.4219rem + 1.6406vw, 2.0625rem);
+  /* Space xs-l: 12px → 44px */
+  --space-xs-l: clamp(0.75rem, 0.25rem + 2.5vw, 2.75rem);
+  /* Space s-m: 16px → 33px */
+  --space-s-m: clamp(1rem, 0.7344rem + 1.3281vw, 2.0625rem);
+  /* Space s-l: 16px → 44px */
+  --space-s-l: clamp(1rem, 0.5625rem + 2.1875vw, 2.75rem);
+  /* Space s-xl: 16px → 66px */
+  --space-s-xl: clamp(1rem, 0.2188rem + 3.9063vw, 4.125rem);
+  /* Space m-l: 24px → 44px */
+  --space-m-l: clamp(1.5rem, 1.1875rem + 1.5625vw, 2.75rem);
+  /* Space m-xl: 24px → 66px */
+  --space-m-xl: clamp(1.5rem, 0.8438rem + 3.2813vw, 4.125rem);
+  /* Space m-2xl: 24px → 88px */
+  --space-m-2xl: clamp(1.5rem, 0.5rem + 5vw, 5.5rem);
+  /* Space l-xl: 32px → 66px */
+  --space-l-xl: clamp(2rem, 1.4688rem + 2.6563vw, 4.125rem);
+  /* Space l-2xl: 32px → 88px */
+  --space-l-2xl: clamp(2rem, 1.125rem + 4.375vw, 5.5rem);
+  /* Space l-3xl: 32px → 132px */
+  --space-l-3xl: clamp(2rem, 0.4375rem + 7.8125vw, 8.25rem);
+  /* Space xl-2xl: 48px → 88px */
+  --space-xl-2xl: clamp(3rem, 2.375rem + 3.125vw, 5.5rem);
+  /* Space xl-3xl: 48px → 132px */
+  --space-xl-3xl: clamp(3rem, 1.6875rem + 6.5625vw, 8.25rem);
+  /* Space 2xl-3xl: 64px → 132px */
+  --space-2xl-3xl: clamp(4rem, 2.9375rem + 5.3125vw, 8.25rem);
+  /* Space 2xl-4xl: 64px → 154px */
+  --space-2xl-4xl: clamp(4rem, 2.5938rem + 7.0313vw, 9.625rem);
+  /* Space l-3xl: 32px → 132px */
+  --space-l-3xl: clamp(2rem, 0.4375rem + 7.8125vw, 8.25rem);
+  /* Space l-4xl: 32px → 154px */
+  --space-l-4xl: clamp(2rem, 0.0938rem + 9.5313vw, 9.625rem);
+  /* Space xl-4xl: 48px → 154px */
+  --space-xl-4xl: clamp(3rem, 1.3438rem + 8.2813vw, 9.625rem);
+
+  --ease-in-out-quart: cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
-/* Balance text wrapping on headings */
-h1,
-h2,
-h3,
-h4 {
-  text-wrap: balance;
-}
-
-/* A elements that don't have a class get default styles */
-a:not([class]) {
-  text-decoration-skip-ink: auto;
-  color: currentColor;
-}
-
-/* Make images easier to work with */
-img,
-picture {
-  max-width: 100%;
-  display: block;
-}
-
-/* Inherit fonts for inputs and buttons */
-input,
-button,
-textarea,
-select {
-  font-family: inherit;
-  font-size: inherit;
-}
-
-/* Make sure textareas without a rows attribute are not tiny */
-textarea:not([rows]) {
-  min-height: 10em;
-}
-
-/* Anything that has been anchored to should have extra scroll margin */
-:target {
-  scroll-margin-block: 32px;
-  scroll-margin-block: 5rlh;
-}
-
-p,
-li,
-figcaption {
-  text-wrap: pretty;
-  max-width: 65ch;
-  font-family: var(--font-source-serif);
-}
-
-header,
-footer,
-main,
-section,
-article {
-  container-type: inline-size;
-}
-
-td,
-math,
-time[datetime*=":"] {
-  font-variant-numeric: tabular-nums lining-nums;
-}
-
-table {
-  border-collapse: collapse;
-}
-
-@media (prefers-reduced-motion: no-preference) {
+@layer base {
   html {
-    scroll-behavior: smooth;
+    @apply scroll-smooth;
+  }
+
+  .h0 {
+    font-size: var(--space-l-3xl);
+    /* font-family: var(--font-general-sans); */
+    font-weight: 700;
+  }
+
+  h1,
+  .h1 {
+    @apply font-sans font-bold;
+    font-size: var(--step-5);
+  }
+
+  h2,
+  .h2 {
+    @apply font-sans font-medium;
+    font-size: var(--step-4);
+  }
+
+  h3,
+  .h3 {
+    @apply font-sans font-medium;
+    font-size: var(--step-3);
+  }
+
+  h4,
+  .h4 {
+    @apply font-sans font-medium;
+    font-size: var(--step-2);
+  }
+
+  h5,
+  .h5 {
+    @apply font-sans font-medium;
+    font-size: var(--step-1);
+  }
+
+  body,
+  .p {
+    @apply font-serif font-light;
+    font-size: var(--step-0);
+  }
+
+  small,
+  .small {
+    @apply font-serif font-light;
+    font-size: var(--step--1);
+  }
+
+  .xsmall {
+    @apply font-serif font-light;
+    font-size: var(--step--2);
+  }
+
+  /* Piccalilli CSS Reset https://piccalil.li/blog/a-more-modern-css-reset/ */
+  /* Box sizing rules */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Prevent font size inflation */
+  html {
+    -moz-text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+
+    interpolate-size: allow-keywords;
+  }
+
+  /* Remove default margin in favour of better control in authored CSS */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin-block-end: 0;
+  }
+
+  /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+  }
+
+  /* Set core body defaults */
+  body {
+    min-height: 100dvh;
+    line-height: 1.5;
+  }
+
+  /* Set shorter line heights on headings and interactive elements */
+  h1,
+  h2,
+  h3,
+  h4,
+  button,
+  input,
+  labeld {
+    line-height: 1.1;
+    font-family: var(--font-general-sans);
+  }
+
+  /* Balance text wrapping on headings */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  /* A elements that don't have a class get default styles */
+  a:not([class]) {
+    text-decoration-skip-ink: auto;
+    color: currentColor;
+  }
+
+  /* Make images easier to work with */
+  img,
+  picture {
+    max-width: 100%;
+    display: block;
+  }
+
+  /* Inherit fonts for inputs and buttons */
+  input,
+  button,
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  /* Make sure textareas without a rows attribute are not tiny */
+  textarea:not([rows]) {
+    min-height: 10em;
+  }
+
+  /* Anything that has been anchored to should have extra scroll margin */
+  :target {
+    scroll-margin-block: 32px;
+    scroll-margin-block: 5rlh;
+  }
+
+  p,
+  li,
+  figcaption {
+    text-wrap: pretty;
+    max-width: 65ch;
+    font-family: var(--font-source-serif);
+  }
+
+  header,
+  footer,
+  main,
+  section,
+  article {
+    container-type: inline-size;
+  }
+
+  td,
+  math,
+  time[datetime*=":"] {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+}
+
+@layer layout {
+  .page-layout > *,
+  .full-width > * {
+    grid-column: content;
+  }
+  .page-layout,
+  .full-width {
+    --minimum-content-padding: 2rem;
+
+    /** TRACK WIDTHS **/
+    --full-max-width: 1fr;
+    --popout-max-width: 1600px;
+    --content-max-width: 1280px;
+    --inset-content-max-width: 960px;
+    --narrow-max-width: 640px;
+
+    /** TRACK SIZES **/
+    --full: minmax(var(--minimum-content-padding), 1fr);
+    --popout: minmax(
+      0,
+      calc((var(--popout-max-width) - var(--content-max-width)) * 0.5)
+    );
+    --content: minmax(
+      0,
+      calc((var(--content-max-width) - var(--inset-content-max-width)) * 0.5)
+    );
+    --inset-content: minmax(
+      0,
+      calc((var(--inset-content-max-width) - var(--narrow-max-width)) * 0.5)
+    );
+    --narrow: min(
+      var(--narrow-max-width),
+      100% - var(--minimum-content-padding) * 2
+    );
+
+    display: grid;
+    grid-template-columns:
+      [full-start]
+      var(--full)
+      [popout-start]
+      var(--popout)
+      [content-start]
+      var(--content)
+      [inset-content-start]
+      var(--inset-content)
+      [narrow-start]
+      var(--narrow)
+      [narrow-end]
+      var(--inset-content)
+      [inset-content-end]
+      var(--content)
+      [content-end]
+      var(--popout)
+      [popout-end]
+      var(--full)
+      [full-end];
+  }
+
+  /** CLASSES **/
+  .full {
+    grid-column: full;
+  }
+  .full-start {
+    grid-column-start: full-start;
+  }
+  .full-end {
+    grid-column-end: full-end;
+  }
+
+  .popout {
+    grid-column: popout;
+  }
+  .popout-start {
+    grid-column-start: popout-start;
+  }
+  .popout-end {
+    grid-column-end: popout-end;
+  }
+
+  .content {
+    grid-column: content;
+  }
+  .content-start {
+    grid-column-start: content-start;
+  }
+  .content-end {
+    grid-column-end: content-end;
+  }
+
+  .inset-content {
+    grid-column: inset-content;
+  }
+  .inset-content-start {
+    grid-column-start: inset-content-start;
+  }
+  .inset-content-end {
+    grid-column-end: inset-content-end;
+  }
+
+  .narrow {
+    grid-column: narrow;
+  }
+  .narrow-start {
+    grid-column-start: narrow-start;
+  }
+  .narrow-end {
+    grid-column-end: narrow-end;
+  }
+
+  .full-width {
+    grid-column: full;
+  }
+  .full-content,
+  .full-content-nopad {
+    grid-column: full;
+  }
+  .full-content {
+    padding-inline: var(--minimum-content-padding);
   }
 }

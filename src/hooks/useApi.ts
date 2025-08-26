@@ -20,7 +20,7 @@ interface UseApiResult<T, B> {
 
 export function useApi<T = unknown, B = unknown>(
   path: string,
-  options: UseApiOptions<B> = {},
+  options: UseApiOptions<B> = {}
 ): UseApiResult<T, B> {
   const url = `${BASE_URL}${path}`;
   const [data, setData] = useState<Data<T>>(null);
@@ -68,7 +68,7 @@ export function useApi<T = unknown, B = unknown>(
         setLoading(false);
       }
     },
-    [url, options],
+    [url, options]
   );
 
   useEffect(() => {
