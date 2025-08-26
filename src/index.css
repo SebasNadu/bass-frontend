@@ -7,10 +7,17 @@
 
 /* @config "../tailwind.config.js"; */
 
+@font-face {
+  font-family: "generalSans";
+  src: url("@/assets/fonts/GeneralSans-Variable.woff2")
+    format("woff2-variations");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: "generalSans", sydstem-ui, Avenir, Helvetica, Arial, sans-serif;
 
   color-scheme: light dark;
 
@@ -251,7 +258,7 @@ body {
 
   /* Set core body defaults */
   body {
-    min-height: 100vh;
+    min-height: 100dvh;
     line-height: 1.5;
   }
 
@@ -262,7 +269,7 @@ body {
   h4,
   button,
   input,
-  label {
+  labeld {
     line-height: 1.1;
     font-family: var(--font-general-sans);
   }
