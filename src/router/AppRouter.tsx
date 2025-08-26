@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import Login from "@/pages/public/login/Login";
 import { PrivateGuard } from "./guard/PrivateGuard";
 import { PrivateRouter } from "./PrivateRouter";
@@ -9,19 +9,17 @@ import ProfilePage from "@/pages/private/profile/ProfilePage";
 
 export const AppRouter = () => {
   return (
-    <BrowserRouter>
-      <RoutesWithNotFound>
-        <Route
-          path={AppRoutes.root}
-          element={<Navigate to={AppRoutes.private.home} />}
-        />
-        <Route path={AppRoutes.login} element={<Login />} />
-        <Route path="/test" element={<PrivateTest />} />
-        <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
-        <Route element={<PrivateGuard />}>
-          <Route path={`${AppRoutes.root}*`} element={<PrivateRouter />} />
-        </Route>
-      </RoutesWithNotFound>
-    </BrowserRouter>
+    <RoutesWithNotFound>
+      <Route
+        path={AppRoutes.root}
+        element={<Navigate to={AppRoutes.private.home} />}
+      />
+      <Route path={AppRoutes.login} element={<Login />} />
+      <Route path="/test" element={<PrivateTest />} />
+      <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
+      <Route element={<PrivateGuard />}>
+        <Route path={`${AppRoutes.root}*`} element={<PrivateRouter />} />
+      </Route>
+    </RoutesWithNotFound>
   );
 };
