@@ -24,21 +24,34 @@ const sliderSettings = {
 
 export default function HomePage() {
   const [meals, setMeals] = useState<MealResponseDTO[]>([]);
+  const [recommendations, setRecommendations] = useState<MealResponseDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Replace with real logged-in memberId from auth context/session
+  const memberId = 1;
+
   useEffect(() => {
-    const fetchMeals = async () => {
+    const fetchMealsAndRecommendations = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const res = await fetch(`${BASE_URL}/api/meals/tag?tagName=Healthy`);
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-        const data: MealResponseDTO[] = await res.json();
+        // Fetch healthy meals
+        const resMeals = await fetch(
+          `${BASE_URL}/api/meals/tag?tagName=Healthy`
+        );
+        if (!resMeals.ok)
+          throw new Error(`Meals request failed: ${resMeals.status}`);
+        const dataMeals: MealResponseDTO[] = await resMeals.json();
+        setMeals(dataMeals.slice(0, 10));
 
-        // limit to 10
-        setMeals(data.slice(0, 10));
+        // Fetch recommendations
+        const resRec = await fetch(`${BASE_URL}/api/meals/recommendations`);
+        if (!resRec.ok)
+          throw new Error(`Recommendations request failed: ${resRec.status}`);
+        const dataRec: MealResponseDTO[] = await resRec.json();
+        setRecommendations(dataRec);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -50,8 +63,8 @@ export default function HomePage() {
       }
     };
 
-    fetchMeals();
-  }, []);
+    fetchMealsAndRecommendations();
+  }, [memberId]);
 
   const renderCarousel = (title: string, items: MealResponseDTO[]) => {
     if (!items || items.length === 0) return null;
@@ -64,11 +77,11 @@ export default function HomePage() {
             <div key={meal.id} className="px-2">
               <Link to={`/meals/${meal.id}`} state={{ meal }}>
                 <Card className="hover:scale-105 transition-transform cursor-pointer">
-                  <CardHeader className="p-0">
+                  <CardHeader className="p-0 justify-center">
                     <Image
                       src={meal.imageUrl}
                       alt={meal.name}
-                      className="object-cover w-full h-48"
+                      className="object-cover object-center w-full h-48"
                       radius="none"
                     />
                   </CardHeader>
@@ -85,13 +98,18 @@ export default function HomePage() {
   };
 
   return (
-    <div className="p-6">
-      <h1>BASS</h1>
+    <div className="p-4">
+      <h1 className="p-4">BASS</h1>
 
       {loading && <p>Loading meals...</p>}
       {error && <p className="text-red-500">Error: {error}</p>}
 
-      {!loading && !error && renderCarousel("Healthy Meals", meals)}
+      {!loading && !error && (
+        <>
+          {renderCarousel("Healthy Meals", meals)}
+          {renderCarousel("Recommended For You", recommendations)}
+        </>
+      )}
     </div>
   );
 }

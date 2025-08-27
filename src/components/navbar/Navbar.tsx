@@ -22,7 +22,7 @@ export default function AppNavbar() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+      navigate("/natural-search", { state: { userText: query.trim() } });
     }
   };
 
