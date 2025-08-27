@@ -7,6 +7,8 @@ import "slick-carousel/slick/slick-theme.css";
 import { BASE_URL } from "@/config/api";
 import type { MealResponseDTO } from "@/types";
 
+import { useAuth } from "@/hooks/useAuth";
+
 // Carousel config
 const sliderSettings = {
   dots: false,
@@ -27,9 +29,7 @@ export default function HomePage() {
   const [recommendations, setRecommendations] = useState<MealResponseDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Replace with real logged-in memberId from auth context/session
-  const memberId = 1;
+  const { isAuthenticated, token } = useAuth();
 
   useEffect(() => {
     const fetchMealsAndRecommendations = async () => {
@@ -39,7 +39,7 @@ export default function HomePage() {
       try {
         // Fetch healthy meals
         const resMeals = await fetch(
-          `${BASE_URL}/api/meals/tag?tagName=Healthy`
+          `${BASE_URL}/api/meals/tag?tagName=Healthy`,
         );
         if (!resMeals.ok)
           throw new Error(`Meals request failed: ${resMeals.status}`);
@@ -47,7 +47,12 @@ export default function HomePage() {
         setMeals(dataMeals.slice(0, 10));
 
         // Fetch recommendations
-        const resRec = await fetch(`${BASE_URL}/api/meals/recommendations`);
+        const resRec = await fetch(`${BASE_URL}/api/meals/recommendations`, {
+          method: "GET",
+          headers: {
+            Authorization: isAuthenticated ? `Bearer ${token}` : "",
+          },
+        });
         if (!resRec.ok)
           throw new Error(`Recommendations request failed: ${resRec.status}`);
         const dataRec: MealResponseDTO[] = await resRec.json();
@@ -64,7 +69,7 @@ export default function HomePage() {
     };
 
     fetchMealsAndRecommendations();
-  }, [memberId]);
+  }, []);
 
   const renderCarousel = (title: string, items: MealResponseDTO[]) => {
     if (!items || items.length === 0) return null;
