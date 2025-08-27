@@ -14,7 +14,7 @@ import type { OrderDTO } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
 
 const columns = [
-  { key: "id", label: "ORDER ID" },
+  { key: "orderId", label: "ORDER ID" },
   { key: "status", label: "STATUS" },
   { key: "totalAmount", label: "TOTAL" },
   { key: "createdAt", label: "DATE" },
@@ -32,17 +32,17 @@ export default function OrderHistoryPage() {
       setError(null);
 
       try {
-        const res = await fetch(`${BASE_URL}/api/order-history`, {
+        const res = await fetch(`${BASE_URL}/api/order`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: isAuthenticated ? `Bearer ${token}` : "",
           },
-          credentials: "include",
         });
 
         if (!res.ok) throw new Error(`Failed: ${res.status}`);
         const data: OrderDTO[] = await res.json();
+        console.log(data);
         setOrders(data);
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
@@ -69,7 +69,7 @@ export default function OrderHistoryPage() {
         </TableHeader>
         <TableBody items={orders}>
           {(order) => (
-            <TableRow key={order.id}>
+            <TableRow key={order.orderId}>
               {(columnKey) => (
                 <TableCell>
                   {columnKey === "totalAmount"

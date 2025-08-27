@@ -5,3 +5,5 @@ export * from "./AuthContextType.ts";
 export * from "./IconProps.ts";
 export * from "./NaturalSearchRequestDTO.ts";
 export * from "./NaturalSearchResponseDTO.ts";
+export * from "./OrderDTO.ts";
+export * from "./OrderItemDTO.ts";

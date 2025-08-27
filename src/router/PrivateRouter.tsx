@@ -15,10 +15,7 @@ export const PrivateRouter = () => {
       <Route path={AppRoutes.private.home} element={<Home />} />
       <Route path={AppRoutes.private.meal} element={<MealPage />} />
       <Route path={AppRoutes.private.search} element={<SearchPage />} />
-      <Route
-        path={AppRoutes.private.orders_history}
-        element={<OrderHistoryPage />}
-      />
+      <Route path={AppRoutes.private.orders} element={<OrderHistoryPage />} />
       <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
       <Route path={AppRoutes.private.cart} element={<CartPage />} />{" "}
     </RoutesWithNotFound>
