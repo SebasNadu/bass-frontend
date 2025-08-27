@@ -6,6 +6,8 @@ import Home from "@/pages/private/home/HomePage";
 import MealPage from "@/pages/private/meal/MealPage";
 import SearchPage from "@/pages/private/search/SearchPage";
 import OrderHistoryPage from "@/pages/private/order-history/OrderHistoryPage";
+import ProfilePage from "@/pages/private/profile/ProfilePage";
+import CartPage from "@/pages/private/cart/CartPage";
 
 export const PrivateRouter = () => {
   return (
@@ -17,6 +19,8 @@ export const PrivateRouter = () => {
         path={AppRoutes.private.orders_history}
         element={<OrderHistoryPage />}
       />
+      <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
+      <Route path={AppRoutes.private.cart} element={<CartPage />} />{" "}
     </RoutesWithNotFound>
   );
 };

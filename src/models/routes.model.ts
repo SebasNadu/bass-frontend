@@ -7,5 +7,6 @@ export const AppRoutes = {
     profile: "/profile",
     search: "/natural-search",
     orders_history: "/orders-history",
+    cart: "/cart",
   },
 };
