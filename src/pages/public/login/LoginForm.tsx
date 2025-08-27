@@ -96,9 +96,16 @@ export default function LoginForm() {
 
       {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
 
-      <Button color="primary" type="submit" variant="ghost" disabled={loading}>
-        {loading ? "Logging in..." : "Submit"}
-      </Button>
+      <div className="w-full flex flex-col items-center justify-center">
+        <Button
+          color="primary"
+          type="submit"
+          variant="ghost"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Submit"}
+        </Button>
+      </div>
     </Form>
   );
 }
