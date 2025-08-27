@@ -5,6 +5,7 @@ import { AppRoutes } from "@/models";
 import Home from "@/pages/private/home/HomePage";
 import MealPage from "@/pages/private/meal/MealPage";
 import SearchPage from "@/pages/private/search/SearchPage";
+import OrderHistoryPage from "@/pages/private/order-history/OrderHistoryPage";
 import ProfilePage from "@/pages/private/profile/ProfilePage";
 import CartPage from "@/pages/private/cart/CartPage";
 
@@ -14,6 +15,7 @@ export const PrivateRouter = () => {
       <Route path={AppRoutes.private.home} element={<Home />} />
       <Route path={AppRoutes.private.meal} element={<MealPage />} />
       <Route path={AppRoutes.private.search} element={<SearchPage />} />
+      <Route path={AppRoutes.private.orders} element={<OrderHistoryPage />} />
       <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
       <Route path={AppRoutes.private.cart} element={<CartPage />} />{" "}
     </RoutesWithNotFound>
