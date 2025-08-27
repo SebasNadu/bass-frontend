@@ -1,8 +1,9 @@
 import { Form, Input, Button } from "@heroui/react";
 import { useState, useEffect } from "react";
 import { Select, SelectItem } from "@heroui/react";
+import { useAuth } from "../../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
-// Define day options
 const dayOptions = [
   { name: "MONDAY", displayName: "Monday" },
   { name: "TUESDAY", displayName: "Tuesday" },
@@ -13,7 +14,7 @@ const dayOptions = [
   { name: "SUNDAY", displayName: "Sunday" },
 ];
 
-export default function App() {
+export default function SignUpForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +26,9 @@ export default function App() {
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -91,6 +95,15 @@ export default function App() {
 
       const data = await response.json();
       console.log("Registration successful:", data);
+
+      const token = data.accessToken;
+
+      if (token) {
+        login(token);
+        navigate("/home");
+      } else {
+        throw new Error("Token not found in response.");
+      }
 
       setName("");
       setEmail("");
@@ -233,10 +246,11 @@ export default function App() {
           Selected days: {days.join(", ")}
         </p>
       </div>
-
-      <Button color="primary" variant="ghost" type="submit">
-        Submit
-      </Button>
+      <div className="w-full flex flex-col items-center justify-center">
+        <Button color="primary" variant="ghost" type="submit">
+          Submit
+        </Button>
+      </div>
     </Form>
   );
 }

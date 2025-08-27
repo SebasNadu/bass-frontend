@@ -4,7 +4,6 @@ import { PrivateGuard } from "./guard/PrivateGuard";
 import { PrivateRouter } from "./PrivateRouter";
 import { RoutesWithNotFound } from "./RoutesWithNotFound";
 import { AppRoutes } from "@/models";
-import ProfilePage from "@/pages/private/profile/ProfilePage";
 
 export const AppRouter = () => {
   return (
@@ -14,7 +13,6 @@ export const AppRouter = () => {
         element={<Navigate to={AppRoutes.private.home} />}
       />
       <Route path={AppRoutes.login} element={<Login />} />
-      <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
       <Route element={<PrivateGuard />}>
         <Route path={`${AppRoutes.root}*`} element={<PrivateRouter />} />
       </Route>
