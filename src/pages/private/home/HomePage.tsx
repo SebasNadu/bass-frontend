@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { BASE_URL } from "@/config/api";
 import type { MealResponseDTO } from "@/types";
 
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth";
 
 // Carousel config
 const sliderSettings = {
@@ -29,7 +29,7 @@ export default function HomePage() {
   //  const [recommendations, setRecommendations] = useState<MealResponseDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, token } = useAuth();
+  // const { isAuthenticated, token } = useAuth();
 
   useEffect(() => {
     const fetchMealsAndRecommendations = async () => {
@@ -39,7 +39,7 @@ export default function HomePage() {
       try {
         // Fetch healthy meals
         const resMeals = await fetch(
-          `${BASE_URL}/api/meals/tag?tagName=Healthy`,
+          `${BASE_URL}/api/meals/tag?tagName=Healthy`
         );
         if (!resMeals.ok)
           throw new Error(`Meals request failed: ${resMeals.status}`);
