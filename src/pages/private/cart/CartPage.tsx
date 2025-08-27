@@ -181,7 +181,10 @@ export default function CartPage() {
 
       <div className="flex flex-wrap justify-center gap-4">
         {cartItems.map((item) => (
-          <Card key={item.id} className="max-w-[400px]">
+          <Card
+            key={item.id}
+            className="w-[300px] h-[240px] flex flex-col justify-between"
+          >
             <CardHeader className="flex gap-3">
               <Image
                 alt="meal image"
@@ -197,12 +200,16 @@ export default function CartPage() {
                 </p>
               </div>
             </CardHeader>
+
             <Divider />
+
             <CardBody>
               <p>Price: {item.meal.price} €</p>
               <p>Quantity: {item.quantity}</p>
             </CardBody>
+
             <Divider />
+
             <CardFooter>
               <p className="text-sm text-default-500">
                 Total: {(item.meal.price * item.quantity).toFixed(2)} €
@@ -212,31 +219,38 @@ export default function CartPage() {
         ))}
       </div>
 
-      {cartItems.length > 0 && coupons.filter((c) => c.isValid).length > 0 && (
-        <div className="mt-6 max-w-xs">
-          <Select
-            label="Select a Coupon"
-            color="success"
-            placeholder="No coupon selected"
-            selectedKeys={selectedCouponId ? [selectedCouponId.toString()] : []}
-            onSelectionChange={(keys) => {
-              const selectedKey = Array.from(keys)[0];
-              setSelectedCouponId(selectedKey ? Number(selectedKey) : null);
-            }}
-          >
-            {coupons
-              .filter((coupon) => coupon.isValid)
-              .map((coupon) => (
-                <SelectItem
-                  key={coupon.id.toString()}
-                  textValue={`${coupon.displayName} ${formatDiscount(coupon)}`}
-                >
-                  {coupon.displayName} ({formatDiscount(coupon)})
-                </SelectItem>
-              ))}
-          </Select>
-        </div>
-      )}
+      <div className="flex flex-wrap justify-center gap-4">
+        {cartItems.length > 0 &&
+          coupons.filter((c) => c.isValid).length > 0 && (
+            <div className="mt-6 w-64">
+              <Select
+                label="Select a Coupon"
+                color="success"
+                placeholder="No coupon selected"
+                selectedKeys={
+                  selectedCouponId ? [selectedCouponId.toString()] : []
+                }
+                onSelectionChange={(keys) => {
+                  const selectedKey = Array.from(keys)[0];
+                  setSelectedCouponId(selectedKey ? Number(selectedKey) : null);
+                }}
+              >
+                {coupons
+                  .filter((coupon) => coupon.isValid)
+                  .map((coupon) => (
+                    <SelectItem
+                      key={coupon.id.toString()}
+                      textValue={`${coupon.displayName} ${formatDiscount(
+                        coupon
+                      )}`}
+                    >
+                      {coupon.displayName} ({formatDiscount(coupon)})
+                    </SelectItem>
+                  ))}
+              </Select>
+            </div>
+          )}
+      </div>
 
       {cartItems.length > 0 && (
         <div className="w-full flex flex-col items-center justify-center mt-8">
