@@ -19,12 +19,12 @@ export default function MemberCard() {
     const fetchMember = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/members/me/token`,
+          `${import.meta.env.VITE_API_URL}/api/members/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          },
+          }
         );
 
         if (!response.ok) {
