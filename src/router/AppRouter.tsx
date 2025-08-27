@@ -5,7 +5,6 @@ import { PrivateRouter } from "./PrivateRouter";
 import PrivateTest from "@/pages/private/PrivateTest";
 import { RoutesWithNotFound } from "./RoutesWithNotFound";
 import { AppRoutes } from "@/models";
-import ProfilePage from "@/pages/private/profile/ProfilePage";
 
 export const AppRouter = () => {
   return (
@@ -16,7 +15,6 @@ export const AppRouter = () => {
       />
       <Route path={AppRoutes.login} element={<Login />} />
       <Route path="/test" element={<PrivateTest />} />
-      <Route path={AppRoutes.private.profile} element={<ProfilePage />} />
       <Route element={<PrivateGuard />}>
         <Route path={`${AppRoutes.root}*`} element={<PrivateRouter />} />
       </Route>

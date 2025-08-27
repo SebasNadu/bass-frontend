@@ -6,5 +6,6 @@ export const AppRoutes = {
     meal: "/meals/:id",
     profile: "/profile",
     search: "/natural-search",
+    cart: "/cart"
   },
 };
