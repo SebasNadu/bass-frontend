@@ -6,8 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { BASE_URL } from "@/config/api";
 import type { MealResponseDTO } from "@/types";
-
-// import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 // Carousel config
 const sliderSettings = {
@@ -26,10 +25,10 @@ const sliderSettings = {
 
 export default function HomePage() {
   const [meals, setMeals] = useState<MealResponseDTO[]>([]);
-  //  const [recommendations, setRecommendations] = useState<MealResponseDTO[]>([]);
+  const [recommendations, setRecommendations] = useState<MealResponseDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const { isAuthenticated, token } = useAuth();
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchMealsAndRecommendations = async () => {
@@ -46,18 +45,22 @@ export default function HomePage() {
         const dataMeals: MealResponseDTO[] = await resMeals.json();
         setMeals(dataMeals.slice(0, 10));
 
-        // Fetch recommendations
-        // const resRec = await fetch(`${BASE_URL}/api/meals/recommendations`);
-        //if (!resRec.ok)
-        //  throw new Error(`Recommendations request failed: ${resRec.status}`);
-        // const dataRec: MealResponseDTO[] = await resRec.json();
-        // setRecommendations(dataRec);
-        //} catch (err: unknown) {
-        // if (err instanceof Error) {
-        //   setError(err.message);
-        // } else {
-        //  setError("Unknown error");
-        // }
+        const resRec = await fetch(`${BASE_URL}/api/meals/recommendations`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!resRec.ok)
+          throw new Error(`Recommendations request failed: ${resRec.status}`);
+        const dataRec: MealResponseDTO[] = await resRec.json();
+        setRecommendations(dataRec);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Unknown error");
+        }
       } finally {
         setLoading(false);
       }
@@ -107,7 +110,7 @@ export default function HomePage() {
       {!loading && !error && (
         <>
           {renderCarousel("Healthy Meals", meals)}
-          {/*      {renderCarousel("Recommended For You", recommendations)}  */}
+          {renderCarousel("Recommended For You", recommendations)}
         </>
       )}
     </div>
