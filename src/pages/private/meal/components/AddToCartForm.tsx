@@ -46,7 +46,7 @@ export function AddToCartForm({
           Authorization: isAuthenticated ? `Bearer ${token}` : "",
         },
         body: JSON.stringify(payload),
-        credentials: "include",
+        // credentials: "include",
       });
 
       if (!response.ok) {

@@ -1,4 +1,3 @@
-
 import type { ReactNode } from "react";
 import AppLayout from "@/AppLayout";
 import "./App.css";
@@ -8,7 +7,11 @@ interface Props {
 }
 
 function App({ children }: Props) {
-  return <AppLayout>{children}</AppLayout>;
+  return (
+    <main className="dark text-foreground bg-background page-layout min-h-screen min-w-screen">
+      <AppLayout>{children}</AppLayout>
+    </main>
+  );
 }
 
 export default App;

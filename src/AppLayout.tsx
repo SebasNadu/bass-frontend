@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import AppNavbar from "@/components/navbar/Navbar";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -7,9 +8,8 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <>
-      <div>navbar</div>
+      <AppNavbar />
       <div className="content">{children}</div>
-      <div>footer</div>
     </>
   );
 }

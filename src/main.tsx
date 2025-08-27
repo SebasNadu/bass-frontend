@@ -6,16 +6,18 @@ import { HeroUIProvider } from "@heroui/react";
 import { AppRouter } from "@/router/AppRouter";
 import { AuthProvider } from "./context/AuthContext";
 
+import { BrowserRouter } from "react-router-dom";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <HeroUIProvider>
-      <main className="dark text-foreground bg-background page-layout min-h-screen min-w-screen">
-        <AuthProvider>
+      <AuthProvider>
+        <BrowserRouter>
           <App>
             <AppRouter />
           </App>
-        </AuthProvider>
-      </main>
+        </BrowserRouter>
+      </AuthProvider>
     </HeroUIProvider>
-  </StrictMode>,
+  </StrictMode>
 );
