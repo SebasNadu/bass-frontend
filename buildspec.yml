@@ -7,6 +7,9 @@ phases:
     commands:
       - npm install -g pnpm
       - pnpm install
+  pre_build:
+    commands:
+      - cp .env.production .env
   build:
     commands:
       - pnpm run build
