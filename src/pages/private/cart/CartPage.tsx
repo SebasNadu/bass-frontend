@@ -7,8 +7,19 @@ import {
   Divider,
   Image,
   Button,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { useAuth } from "../../../hooks/useAuth";
+
+type Coupon = {
+  id: number;
+  code: string;
+  displayName: string;
+  discountType: "FIXED_AMOUNT" | "PERCENTAGE";
+  discountValue: number;
+  isValid: boolean;
+};
 
 type Meal = {
   name: string;
@@ -27,6 +38,8 @@ type CartItemResponseDTO = {
 export default function CartPage() {
   const { token } = useAuth();
   const [cartItems, setCartItems] = useState<CartItemResponseDTO[]>([]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [orderProcessing, setOrderProcessing] = useState(false);
@@ -49,7 +62,6 @@ export default function CartPage() {
           throw new Error("Failed to fetch cart");
         }
         const data: CartItemResponseDTO[] = await response.json();
-        console.log(data);
         setCartItems(data);
       } catch (err) {
         console.error(err);
@@ -59,7 +71,26 @@ export default function CartPage() {
       }
     };
 
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/members/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) throw new Error("Failed to fetch user info");
+        const data = await response.json();
+        setCoupons(data.coupons || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchCart();
+    fetchUserInfo();
   }, [token]);
 
   const totalAmount = cartItems.reduce(
@@ -67,16 +98,32 @@ export default function CartPage() {
     0
   );
 
+  const selectedCoupon = coupons.find((c) => c.id === selectedCouponId);
+
+  const discountedAmount = (() => {
+    if (!selectedCoupon) return totalAmount;
+
+    if (selectedCoupon.discountType === "FIXED_AMOUNT") {
+      return Math.max(totalAmount - selectedCoupon.discountValue, 0);
+    }
+
+    if (selectedCoupon.discountType === "PERCENTAGE") {
+      return totalAmount * (1 - selectedCoupon.discountValue / 100);
+    }
+
+    return totalAmount;
+  })();
+
   const handleOrder = async () => {
     setOrderProcessing(true);
     setError(null);
     setOrderSuccess(false);
 
     const paymentRequest = {
-      amount: totalAmount,
+      amount: discountedAmount,
       currency: "EUR",
       paymentMethod: "pm_card_visa",
-      couponId: null,
+      couponId: selectedCouponId,
     };
 
     try {
@@ -101,6 +148,7 @@ export default function CartPage() {
       console.log("Order successful:", data);
       setOrderSuccess(true);
       setCartItems([]);
+      setSelectedCouponId(null);
     } catch (err) {
       const message = err instanceof Error ? err.message : "An error occurred";
       setError(message);
@@ -108,6 +156,12 @@ export default function CartPage() {
     } finally {
       setOrderProcessing(false);
     }
+  };
+
+  const formatDiscount = (coupon: Coupon) => {
+    return coupon.discountType === "FIXED_AMOUNT"
+      ? `-${coupon.discountValue} €`
+      : `-${coupon.discountValue} %`;
   };
 
   return (
@@ -125,7 +179,7 @@ export default function CartPage() {
         <p>Your cart is empty.</p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex flex-wrap justify-center gap-4">
         {cartItems.map((item) => (
           <Card key={item.id} className="max-w-[400px]">
             <CardHeader className="flex gap-3">
@@ -158,11 +212,42 @@ export default function CartPage() {
         ))}
       </div>
 
+      {cartItems.length > 0 && coupons.filter((c) => c.isValid).length > 0 && (
+        <div className="mt-6 max-w-xs">
+          <Select
+            label="Select a Coupon"
+            color="success"
+            placeholder="No coupon selected"
+            selectedKeys={selectedCouponId ? [selectedCouponId.toString()] : []}
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0];
+              setSelectedCouponId(selectedKey ? Number(selectedKey) : null);
+            }}
+          >
+            {coupons
+              .filter((coupon) => coupon.isValid)
+              .map((coupon) => (
+                <SelectItem
+                  key={coupon.id.toString()}
+                  textValue={`${coupon.displayName} ${formatDiscount(coupon)}`}
+                >
+                  {coupon.displayName} ({formatDiscount(coupon)})
+                </SelectItem>
+              ))}
+          </Select>
+        </div>
+      )}
+
       {cartItems.length > 0 && (
         <div className="w-full flex flex-col items-center justify-center mt-8">
-          <p className="text-lg font-semibold mb-2">
-            Total: {totalAmount.toFixed(2)} €
+          <p className="text-lg font-semibold mb-1">
+            Total: {discountedAmount.toFixed(2)} €
           </p>
+          {selectedCoupon && (
+            <p className="text-sm text-gray-600 mb-2">
+              Discount applied: {formatDiscount(selectedCoupon)}
+            </p>
+          )}
           <Button
             color="primary"
             onClick={handleOrder}
