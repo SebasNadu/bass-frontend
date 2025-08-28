@@ -17,6 +17,7 @@ import {
   ModalFooter,
 } from "@heroui/react";
 import { useAuth } from "../../../hooks/useAuth";
+import type { MemberProfileDTO } from "@/types";
 
 type Coupon = {
   id: number;
@@ -53,7 +54,7 @@ type Payment = {
   status: string;
   amount: number;
   amountWithoutDiscount: number;
-  discountAmount: number;
+  discountValue: number;
 };
 
 type OrderDetails = {
@@ -72,17 +73,6 @@ type OrderDetails = {
   };
 };
 
-// Define the member details interface
-interface MemberDetails {
-  streak: number;
-  testimonial: string;
-  newCoupon: {
-    displayName: string;
-    memberStreak: number;
-    achievementDescription: string;
-  } | null;
-}
-
 export default function CartPage() {
   const { token } = useAuth();
   const [cartItems, setCartItems] = useState<CartItemResponseDTO[]>([]);
@@ -94,13 +84,14 @@ export default function CartPage() {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // For the confirmation modal
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [profile, setProfile] = useState<MemberProfileDTO | null>(null);
 
-  const [memberDetails, setMemberDetails] = useState<MemberDetails | null>(
-    null
-  );
+  // Define the days array
+  const days = [
+    { name: "Kickoff!" },
+    // Add more days if needed
+  ];
 
   useEffect(() => {
     if (!token) return;
@@ -141,7 +132,7 @@ export default function CartPage() {
         if (!response.ok) throw new Error("Failed to fetch user info");
         const data = await response.json();
         setCoupons(data.coupons || []);
-        setMemberDetails(data); // Set the member details here
+        setProfile(data);
       } catch (err) {
         console.error(err);
       }
@@ -172,15 +163,39 @@ export default function CartPage() {
     return totalAmount;
   })();
 
+  // Get the current day
+  const getCurrentDay = () => {
+    const today = new Date();
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    return dayNames[today.getDay()];
+  };
+
+  // Check if the day matches any of the days in the array
+  const isTodaySpecialDay = (days: string[]) => {
+    const currentDay = getCurrentDay();
+    return days.includes(currentDay);
+  };
+
   const handleOrder = async () => {
-    // Check if more than half of the items in the cart don't have "Healthy" tag
     const healthyCount = cartItems.filter((item) =>
       item.meal.tags.some((tag) => tag.name === "Healthy")
     ).length;
 
     const totalItems = cartItems.length;
-    if (healthyCount < totalItems / 2) {
-      // Show confirmation modal
+
+    // Get the special days (like "Kickoff!")
+    const specialDays = days.map((day) => day.name);
+
+    // If today is a special day, do not trigger the alert
+    if (healthyCount < totalItems / 2 && !isTodaySpecialDay(specialDays)) {
       setIsConfirmationOpen(true);
     } else {
       placeOrder();
@@ -247,6 +262,19 @@ export default function CartPage() {
     setIsConfirmationOpen(false);
   };
 
+  const safeToFixed = (value: number | null | undefined): string => {
+    if (
+      value === null ||
+      value === undefined ||
+      isNaN(value) ||
+      value === Infinity ||
+      value === -Infinity
+    ) {
+      return "0.00";
+    }
+    return value.toFixed(2);
+  };
+
   return (
     <section className="p-4 max-w-3xl mx-auto">
       <h1 className="text-3xl font-semibold mb-6">Your Cart</h1>
@@ -295,7 +323,7 @@ export default function CartPage() {
 
             <CardFooter>
               <p className="text-sm text-default-500">
-                Total: {(item.meal.price * item.quantity).toFixed(2)} €
+                Total: {safeToFixed(item.meal.price * item.quantity)} €
               </p>
             </CardFooter>
           </Card>
@@ -338,7 +366,7 @@ export default function CartPage() {
       {cartItems.length > 0 && (
         <div className="w-full flex flex-col items-center justify-center mt-8">
           <p className="text-lg font-semibold mb-1">
-            Total: {discountedAmount.toFixed(2)} €
+            Total: {safeToFixed(discountedAmount)} €
           </p>
           {selectedCoupon && (
             <p className="text-sm text-gray-600 mb-2">
@@ -369,11 +397,10 @@ export default function CartPage() {
           <ModalBody>
             <div className="flex flex-col items-center justify-center text-center p-4">
               <p className="mb-2 text-red-500">
-                You are about to lose your streak of {memberDetails?.streak}{" "}
-                days.
+                You are about to lose your streak of {profile?.streak} days.
               </p>
               <p> Remember what brought you here! </p>
-              <p className="mb-4 font-bold">"{memberDetails?.testimonial}"</p>
+              <p className="mb-4 font-bold">"{profile?.testimonial}"</p>
             </div>
             <div className="flex gap-4 justify-center">
               <Button color="success" onClick={handleCancel}>
@@ -402,7 +429,7 @@ export default function CartPage() {
                     <span>
                       {item.mealName} (x{item.quantity})
                     </span>
-                    <span>{(item.price * item.quantity).toFixed(2)} €</span>
+                    <span>{safeToFixed(item.price * item.quantity)} €</span>
                   </div>
                 ))}
               </div>
@@ -416,19 +443,21 @@ export default function CartPage() {
                     <p>Status: {orderDetails.order.payments[0].status}</p>
                     <p>
                       Total without discount:{" "}
-                      {orderDetails.order.payments[0].amountWithoutDiscount.toFixed(
-                        2
+                      {safeToFixed(
+                        orderDetails.order.payments[0].amountWithoutDiscount
                       )}{" "}
                       €
                     </p>
                     <p>
                       Discount applied:{" "}
-                      {orderDetails.order.payments[0].discountAmount.toFixed(2)}{" "}
+                      {safeToFixed(
+                        orderDetails.order.payments[0].discountValue
+                      )}{" "}
                       €
                     </p>
                     <p>
-                      Total: {orderDetails.order.payments[0].amount.toFixed(2)}{" "}
-                      €
+                      Total:{" "}
+                      {safeToFixed(orderDetails.order.payments[0].amount)} €
                     </p>
                   </>
                 ) : (
