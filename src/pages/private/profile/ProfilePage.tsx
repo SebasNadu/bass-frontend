@@ -9,10 +9,14 @@ import {
   Button,
   Tooltip,
 } from "@heroui/react";
+
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { BASE_URL } from "@/config/api";
 import type { MemberProfileDTO } from "@/types";
 import ProfileAccordion from "./components/ProfileAccordion";
+import defaultProfile from "@/assets/default_profile.png";
+import shakira from "@/assets/shakira.png";
 
 export default function MemberCard() {
   const [profile, setProfile] = useState<MemberProfileDTO | null>(null);
@@ -51,9 +55,7 @@ export default function MemberCard() {
 
   // Pick avatar depending on name
   const avatarSrc =
-    profile.name.toLowerCase() === "shakira"
-      ? "/assets/shakira.jpg"
-      : "/assets/default_profile.jpg";
+    profile.name.toLowerCase() === "shakira" ? shakira : defaultProfile;
 
   return (
     <div className="flex flex-col items-center p-6 space-y-8">
@@ -104,6 +106,12 @@ export default function MemberCard() {
       <section className="w-3/6">
         <ProfileAccordion profile={profile} />
       </section>
+
+      <NavLink to="/orders" className="text-secondary">
+        <Button aria-label="Streak" color="primary">
+          Order History
+        </Button>
+      </NavLink>
     </div>
   );
 }
