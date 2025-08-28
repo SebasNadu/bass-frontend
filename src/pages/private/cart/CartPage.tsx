@@ -31,6 +31,7 @@ type Meal = {
   name: string;
   price: number;
   imageUrl: string;
+  tags: { id: number; name: string }[];
 };
 
 type CartItemResponseDTO = {
@@ -71,6 +72,17 @@ type OrderDetails = {
   };
 };
 
+// Define the member details interface
+interface MemberDetails {
+  streak: number;
+  testimonial: string;
+  newCoupon: {
+    displayName: string;
+    memberStreak: number;
+    achievementDescription: string;
+  } | null;
+}
+
 export default function CartPage() {
   const { token } = useAuth();
   const [cartItems, setCartItems] = useState<CartItemResponseDTO[]>([]);
@@ -83,9 +95,12 @@ export default function CartPage() {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => {
-    console.log("isOpen changed to:", isOpen); // Logs whenever isOpen changes
-  }, [isOpen]);
+  // For the confirmation modal
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
+  const [memberDetails, setMemberDetails] = useState<MemberDetails | null>(
+    null
+  );
 
   useEffect(() => {
     if (!token) return;
@@ -126,6 +141,7 @@ export default function CartPage() {
         if (!response.ok) throw new Error("Failed to fetch user info");
         const data = await response.json();
         setCoupons(data.coupons || []);
+        setMemberDetails(data); // Set the member details here
       } catch (err) {
         console.error(err);
       }
@@ -157,6 +173,21 @@ export default function CartPage() {
   })();
 
   const handleOrder = async () => {
+    // Check if more than half of the items in the cart don't have "Healthy" tag
+    const healthyCount = cartItems.filter((item) =>
+      item.meal.tags.some((tag) => tag.name === "Healthy")
+    ).length;
+
+    const totalItems = cartItems.length;
+    if (healthyCount < totalItems / 2) {
+      // Show confirmation modal
+      setIsConfirmationOpen(true);
+    } else {
+      placeOrder();
+    }
+  };
+
+  const placeOrder = async () => {
     setOrderProcessing(true);
     setError(null);
     setOrderSuccess(false);
@@ -192,9 +223,7 @@ export default function CartPage() {
       setOrderSuccess(true);
       setCartItems([]);
       setSelectedCouponId(null);
-      console.log("IM OPENING");
       onOpen();
-      console.log(isOpen);
     } catch (err) {
       const message = err instanceof Error ? err.message : "An error occurred";
       setError(message);
@@ -208,6 +237,15 @@ export default function CartPage() {
     return coupon.discountType === "FIXED_AMOUNT"
       ? `-${coupon.discountValue} €`
       : `-${coupon.discountValue} %`;
+  };
+
+  const handleConfirm = () => {
+    setIsConfirmationOpen(false); // Close the confirmation modal
+    placeOrder(); // Proceed with placing the order
+  };
+
+  const handleCancel = () => {
+    setIsConfirmationOpen(false); // Just close the modal without placing the order
   };
 
   return (
@@ -319,6 +357,35 @@ export default function CartPage() {
         </div>
       )}
 
+      {/* Confirmation Modal */}
+      <Modal
+        backdrop="opaque"
+        isOpen={isConfirmationOpen}
+        onOpenChange={setIsConfirmationOpen}
+      >
+        <ModalContent>
+          <ModalHeader className="text-xl text-center">
+            Are you sure?
+          </ModalHeader>
+          <ModalBody>
+            <p className="mb-2">
+              You are about to lose your streak of {memberDetails?.streak}{" "}
+              points.
+            </p>
+            <p className="mb-4">{memberDetails?.testimonial}</p>
+            <div className="flex gap-4 justify-center">
+              <Button color="danger" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button color="primary" onClick={handleConfirm}>
+                Confirm
+              </Button>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Order Success Modal */}
       {isOpen && orderDetails && (
         <Modal backdrop="opaque" isOpen={isOpen} onOpenChange={onClose}>
           <ModalContent>
