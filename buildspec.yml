@@ -14,7 +14,7 @@ phases:
       - npm run build
   post_build:
     commands:
-      - aws s3 sync / s3://techcourse-project-2025/bass --delete
+      - aws s3 sync dist/ s3://techcourse-project-2025/bass/ --delete
 
 cache:
   paths:
