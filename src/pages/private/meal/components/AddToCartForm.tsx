@@ -6,7 +6,7 @@ import type { CartItemRequestDTO } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
 
 // TODO: redircet to cart page after adding item, if it is necessary
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export function AddToCartForm({
   mealId,
@@ -19,7 +19,7 @@ export function AddToCartForm({
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const { isAuthenticated, token } = useAuth();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +55,7 @@ export function AddToCartForm({
 
       const json = await response.json();
       setMessage(`Added to cart! (Quantity: ${json.quantity})`);
-      // navigate("/cart");
+      navigate("/home");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setMessage(`Error: ${err.message}`);
