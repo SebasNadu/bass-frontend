@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -104,7 +104,7 @@ export default function CartPage() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (!response.ok) {
           throw new Error("Failed to fetch cart");
@@ -127,7 +127,7 @@ export default function CartPage() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (!response.ok) throw new Error("Failed to fetch user info");
         const data = await response.json();
@@ -144,7 +144,7 @@ export default function CartPage() {
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.meal.price * item.quantity,
-    0
+    0,
   );
 
   const selectedCoupon = coupons.find((c) => c.id === selectedCouponId);
@@ -186,7 +186,7 @@ export default function CartPage() {
 
   const handleOrder = async () => {
     const healthyCount = cartItems.filter((item) =>
-      item.meal.tags.some((tag) => tag.name === "Healthy")
+      item.meal.tags.some((tag) => tag.name === "Healthy"),
     ).length;
 
     const totalItems = cartItems.length;
@@ -224,7 +224,7 @@ export default function CartPage() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(paymentRequest),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -352,7 +352,7 @@ export default function CartPage() {
                     <SelectItem
                       key={coupon.id.toString()}
                       textValue={`${coupon.displayName} ${formatDiscount(
-                        coupon
+                        coupon,
                       )}`}
                     >
                       {coupon.displayName} ({formatDiscount(coupon)})

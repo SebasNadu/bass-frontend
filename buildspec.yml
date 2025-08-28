@@ -3,20 +3,18 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 22
     commands:
-      - npm install -g pnpm
-      - pnpm install
+      - npm install
   pre_build:
     commands:
       - cp .env.production .env
   build:
     commands:
-      - pnpm run build
+      - npm run build
   post_build:
     commands:
       - aws s3 sync dist/ s3://techcourse-project-2025/bass --delete
-      - aws cloudfront create-invalidation --distribution-id E2941RLZ53K7DD --paths "/*"
 
 cache:
   paths:

@@ -39,8 +39,8 @@ export default function SearchPage() {
           body: JSON.stringify(body),
         });
 
-        const text = await response.text(); // get raw response
-        console.log("Raw response:", text);
+        // const text = await response.text(); // get raw response
+        // console.log("Raw response:", text);
 
         if (!response.ok) throw new Error(`Status ${response.status}`);
 
@@ -63,7 +63,12 @@ export default function SearchPage() {
   if (!results) return null;
 
   return results.meals.length > 0 ? (
-    <MealsGrid data={results} />
+    <>
+      <div className="mb-4 px-4">
+        <h2>Natural Language Search</h2>
+      </div>
+      <MealsGrid data={results} />
+    </>
   ) : (
     <p>No meals found for "{userText}"</p>
   );
