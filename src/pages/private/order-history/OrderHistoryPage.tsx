@@ -73,7 +73,15 @@ export default function OrderHistoryPage() {
               {(columnKey) => (
                 <TableCell>
                   {columnKey === "totalAmount"
-                    ? `$${order.totalAmount}`
+                    ? `€${order.totalAmount}`
+                    : columnKey === "createdAt"
+                    ? new Date(order.createdAt).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
                     : getKeyValue(order, columnKey)}
                 </TableCell>
               )}
