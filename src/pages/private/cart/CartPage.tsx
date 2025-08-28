@@ -9,6 +9,12 @@ import {
   Button,
   Select,
   SelectItem,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@heroui/react";
 import { useAuth } from "../../../hooks/useAuth";
 
@@ -35,6 +41,36 @@ type CartItemResponseDTO = {
   addedAt: string;
 };
 
+type OrderItem = {
+  mealName: string;
+  quantity: number;
+  price: number;
+  totalPrice: number;
+};
+
+type Payment = {
+  status: string;
+  amount: number;
+  amountWithoutDiscount: number;
+  discountAmount: number;
+};
+
+type OrderDetails = {
+  order: {
+    items: OrderItem[];
+    totalAmount: number;
+    status: string;
+    payments: Payment[];
+  };
+  memberDetails: {
+    newCoupon: {
+      displayName: string;
+      memberStreak: number;
+      achievementDescription: string;
+    } | null;
+  };
+};
+
 export default function CartPage() {
   const { token } = useAuth();
   const [cartItems, setCartItems] = useState<CartItemResponseDTO[]>([]);
@@ -44,6 +80,12 @@ export default function CartPage() {
   const [error, setError] = useState<string | null>(null);
   const [orderProcessing, setOrderProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+    console.log("isOpen changed to:", isOpen); // Logs whenever isOpen changes
+  }, [isOpen]);
 
   useEffect(() => {
     if (!token) return;
@@ -144,11 +186,15 @@ export default function CartPage() {
         throw new Error(errorData.message || "Order failed");
       }
 
-      const data = await response.json();
+      const data: OrderDetails = await response.json();
+      setOrderDetails(data);
       console.log("Order successful:", data);
       setOrderSuccess(true);
       setCartItems([]);
       setSelectedCouponId(null);
+      console.log("IM OPENING");
+      onOpen();
+      console.log(isOpen);
     } catch (err) {
       const message = err instanceof Error ? err.message : "An error occurred";
       setError(message);
@@ -170,7 +216,7 @@ export default function CartPage() {
 
       {loading && <p>Loading your cart...</p>}
       {error && <p className="text-red-500">{error}</p>}
-      {orderSuccess && (
+      {orderSuccess && !isOpen && (
         <p className="text-green-600 font-semibold">
           Order placed successfully!
         </p>
@@ -271,6 +317,76 @@ export default function CartPage() {
             {orderProcessing ? "Placing Order..." : "Order"}
           </Button>
         </div>
+      )}
+
+      {isOpen && orderDetails && (
+        <Modal backdrop="opaque" isOpen={isOpen} onOpenChange={onClose}>
+          <ModalContent>
+            <ModalHeader className="flex flex-col gap-1 text-2xl text-center">
+              Order Confirmation
+            </ModalHeader>
+            <ModalBody>
+              <h3 className="font-semibold text-lg mb-4">Order Items</h3>
+              <div>
+                {orderDetails.order.items.map((item, index) => (
+                  <div key={index} className="flex justify-between mb-2">
+                    <span>
+                      {item.mealName} (x{item.quantity})
+                    </span>
+                    <span>{(item.price * item.quantity).toFixed(2)} €</span>
+                  </div>
+                ))}
+              </div>
+
+              <Divider className="my-4" />
+
+              <h3 className="font-semibold text-lg mb-4">Payment Details</h3>
+              <div>
+                {orderDetails.order.payments.length > 0 ? (
+                  <>
+                    <p>Status: {orderDetails.order.payments[0].status}</p>
+                    <p>
+                      Total without discount:{" "}
+                      {orderDetails.order.payments[0].amountWithoutDiscount.toFixed(
+                        2
+                      )}{" "}
+                      €
+                    </p>
+                    <p>
+                      Discount applied:{" "}
+                      {orderDetails.order.payments[0].discountAmount.toFixed(2)}{" "}
+                      €
+                    </p>
+                    <p>
+                      Total: {orderDetails.order.payments[0].amount.toFixed(2)}{" "}
+                      €
+                    </p>
+                  </>
+                ) : (
+                  <p>No payment details available.</p>
+                )}
+              </div>
+
+              {orderDetails.memberDetails.newCoupon && (
+                <>
+                  <Divider className="my-4" />
+                  <h3 className="font-semibold text-lg mb-4">New Coupon</h3>
+                  <p>
+                    Your new coupon is:{" "}
+                    <strong>
+                      {orderDetails.memberDetails.newCoupon.displayName}
+                    </strong>
+                  </p>
+                </>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       )}
     </section>
   );
