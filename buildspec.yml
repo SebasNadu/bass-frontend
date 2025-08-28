@@ -15,7 +15,6 @@ phases:
   post_build:
     commands:
       - aws s3 sync dist/ s3://techcourse-project-2025/bass --delete
-      - aws cloudfront create-invalidation --distribution-id E2941RLZ53K7DD --paths "/*"
 
 cache:
   paths:
