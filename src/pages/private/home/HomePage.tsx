@@ -38,7 +38,7 @@ export default function HomePage() {
       try {
         // Fetch healthy meals
         const resMeals = await fetch(
-          `${BASE_URL}/api/meals/tag?tagName=Healthy`
+          `${BASE_URL}/api/meals/tag?tagName=Healthy`,
         );
         if (!resMeals.ok)
           throw new Error(`Meals request failed: ${resMeals.status}`);
@@ -101,12 +101,13 @@ export default function HomePage() {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 ">
       <h1 className="p-4">BASS</h1>
 
-      {loading && <p>Loading meals...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>}
-
+      <div className="grid place-items-center">
+        {loading && <p className="text-center">Loading meals...</p>}
+        {error && <p className="text-red-500 text-center">Error: {error}</p>}
+      </div>
       {!loading && !error && (
         <>
           {renderCarousel("Healthy Meals", meals)}
