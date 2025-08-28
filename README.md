@@ -1,6 +1,6 @@
 # BASS frontend
 
-## `useApi` Hook Documentation
+## `useApi` Hook Documentation.
 
 A reusable React hook for handling API requests with **fetch**, including:
 
