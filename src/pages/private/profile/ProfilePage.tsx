@@ -8,6 +8,7 @@ import {
   CardBody,
   Button,
   Tooltip,
+  Chip,
 } from "@heroui/react";
 
 import { NavLink } from "react-router-dom";
@@ -38,6 +39,7 @@ export default function MemberCard() {
         if (!res.ok) throw new Error(`Failed: ${res.status}`);
         const data: MemberProfileDTO = await res.json();
         setProfile(data);
+        console.log(data);
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
         else setError("Unknown error");
@@ -77,10 +79,17 @@ export default function MemberCard() {
                 name={profile.name}
               />
               <div className="">
-                <h2 className="text-lg font-semibold text-default-700 text-start">
+                <h2 className="text-lg font-semibold text-default-700">
                   {profile.name}
                 </h2>
                 <p className="text-small text-default-500">{profile.email}</p>
+                <div className="flex gap-2 mt-2">
+                  {profile.days.map((day, index) => (
+                    <Chip key={index} color="secondary">
+                      {day.dayOfWeek}
+                    </Chip>
+                  ))}
+                </div>
               </div>
               <div className="flex flex-col pl-8">
                 <Badge color="danger" content={profile.streak} shape="circle">
@@ -101,7 +110,7 @@ export default function MemberCard() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <p>Make beautiful streak.</p>
+            <p>{profile.testimonial}</p>
           </CardBody>
           <Divider />
         </Card>
