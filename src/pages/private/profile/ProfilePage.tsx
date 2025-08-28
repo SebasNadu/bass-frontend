@@ -49,7 +49,12 @@ export default function MemberCard() {
     fetchProfile();
   }, [isAuthenticated, token]);
 
-  if (loading) return <p>Loading profile...</p>;
+  if (loading)
+    return (
+      <div className="grid place-items-center">
+        <p>Loading profile...</p>
+      </div>
+    );
   if (error) return <p className="text-red-500">Error: {error}</p>;
   if (!profile) return null;
 

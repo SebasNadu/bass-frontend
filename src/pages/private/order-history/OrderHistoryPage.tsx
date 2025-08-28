@@ -42,7 +42,6 @@ export default function OrderHistoryPage() {
 
         if (!res.ok) throw new Error(`Failed: ${res.status}`);
         const data: OrderDTO[] = await res.json();
-        console.log(data);
         setOrders(data);
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
@@ -75,14 +74,14 @@ export default function OrderHistoryPage() {
                   {columnKey === "totalAmount"
                     ? `€${order.totalAmount}`
                     : columnKey === "createdAt"
-                      ? new Date(order.createdAt).toLocaleString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : getKeyValue(order, columnKey)}
+                    ? new Date(order.createdAt).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : getKeyValue(order, columnKey)}
                 </TableCell>
               )}
             </TableRow>

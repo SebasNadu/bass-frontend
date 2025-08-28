@@ -219,7 +219,6 @@ export default function CartPage() {
 
       const data: OrderDetails = await response.json();
       setOrderDetails(data);
-      console.log("Order successful:", data);
       setOrderSuccess(true);
       setCartItems([]);
       setSelectedCouponId(null);
@@ -240,12 +239,12 @@ export default function CartPage() {
   };
 
   const handleConfirm = () => {
-    setIsConfirmationOpen(false); // Close the confirmation modal
-    placeOrder(); // Proceed with placing the order
+    setIsConfirmationOpen(false);
+    placeOrder();
   };
 
   const handleCancel = () => {
-    setIsConfirmationOpen(false); // Just close the modal without placing the order
+    setIsConfirmationOpen(false);
   };
 
   return (
@@ -364,20 +363,23 @@ export default function CartPage() {
         onOpenChange={setIsConfirmationOpen}
       >
         <ModalContent>
-          <ModalHeader className="text-xl text-center">
+          <ModalHeader className="text-2xl text-center justify-center">
             Are you sure?
           </ModalHeader>
           <ModalBody>
-            <p className="mb-2">
-              You are about to lose your streak of {memberDetails?.streak}{" "}
-              points.
-            </p>
-            <p className="mb-4">{memberDetails?.testimonial}</p>
+            <div className="flex flex-col items-center justify-center text-center p-4">
+              <p className="mb-2 text-red-500">
+                You are about to lose your streak of {memberDetails?.streak}{" "}
+                days.
+              </p>
+              <p> Remember what brought you here! </p>
+              <p className="mb-4 font-bold">"{memberDetails?.testimonial}"</p>
+            </div>
             <div className="flex gap-4 justify-center">
-              <Button color="danger" onClick={handleCancel}>
+              <Button color="success" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button color="primary" onClick={handleConfirm}>
+              <Button color="danger" onClick={handleConfirm}>
                 Confirm
               </Button>
             </div>
