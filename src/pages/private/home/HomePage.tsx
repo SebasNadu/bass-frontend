@@ -8,7 +8,6 @@ import { BASE_URL } from "@/config/api";
 import type { MealResponseDTO } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
 
-// Carousel config
 const sliderSettings = {
   dots: false,
   infinite: true,
@@ -24,7 +23,12 @@ const sliderSettings = {
 };
 
 export default function HomePage() {
-  const [meals, setMeals] = useState<MealResponseDTO[]>([]);
+  const [mealsByCategory, setMealsByCategory] = useState<{
+    Healthy: MealResponseDTO[];
+    Vegan: MealResponseDTO[];
+    "High-Protein": MealResponseDTO[];
+  }>({ Healthy: [], Vegan: [], "High-Protein": [] });
+
   const [recommendations, setRecommendations] = useState<MealResponseDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,38 +40,45 @@ export default function HomePage() {
       setError(null);
 
       try {
-        // Fetch healthy meals
-        const resMeals = await fetch(
-          `${BASE_URL}/api/meals/tag?tagName=Healthy`
-        );
-        if (!resMeals.ok)
-          throw new Error(`Meals request failed: ${resMeals.status}`);
-        const dataMeals: MealResponseDTO[] = await resMeals.json();
-        setMeals(dataMeals.slice(0, 10));
+        // Fetch categories in parallel
+        const categories = ["Healthy", "Vegan", "High-Protein"] as const;
 
+        const categoryResults = await Promise.all(
+          categories.map(async (cat) => {
+            const res = await fetch(`${BASE_URL}/api/meals/tag?tagName=${cat}`);
+            if (!res.ok)
+              throw new Error(`Meals (${cat}) failed: ${res.status}`);
+            const data: MealResponseDTO[] = await res.json();
+            return [cat, data.slice(0, 10)] as const;
+          })
+        );
+
+        // Map results into object
+        const categoryMap = Object.fromEntries(categoryResults) as {
+          Healthy: MealResponseDTO[];
+          Vegan: MealResponseDTO[];
+          "High-Protein": MealResponseDTO[];
+        };
+        setMealsByCategory(categoryMap);
+
+        // Fetch recommendations
         const resRec = await fetch(`${BASE_URL}/api/meals/recommendations`, {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (!resRec.ok)
           throw new Error(`Recommendations request failed: ${resRec.status}`);
         const dataRec: MealResponseDTO[] = await resRec.json();
         setRecommendations(dataRec);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Unknown error");
-        }
+        setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
     };
 
     fetchMealsAndRecommendations();
-  }, []);
+  }, [token]);
 
   const renderCarousel = (title: string, items: MealResponseDTO[]) => {
     if (!items || items.length === 0) return null;
@@ -109,8 +120,13 @@ export default function HomePage() {
 
       {!loading && !error && (
         <>
-          {renderCarousel("Healthy Meals", meals)}
           {renderCarousel("Recommended For You", recommendations)}
+          {renderCarousel("Healthy Meals", mealsByCategory.Healthy)}
+          {renderCarousel("Vegan Meals", mealsByCategory.Vegan)}
+          {renderCarousel(
+            "High-Protein Meals",
+            mealsByCategory["High-Protein"]
+          )}
         </>
       )}
     </div>

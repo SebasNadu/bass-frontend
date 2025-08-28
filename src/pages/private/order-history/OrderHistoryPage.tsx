@@ -53,7 +53,7 @@ export default function OrderHistoryPage() {
     };
 
     fetchOrders();
-  }, []);
+  }, [isAuthenticated, token]);
 
   if (loading) return <p>Loading orders...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
@@ -75,14 +75,14 @@ export default function OrderHistoryPage() {
                   {columnKey === "totalAmount"
                     ? `€${order.totalAmount}`
                     : columnKey === "createdAt"
-                    ? new Date(order.createdAt).toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : getKeyValue(order, columnKey)}
+                      ? new Date(order.createdAt).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : getKeyValue(order, columnKey)}
                 </TableCell>
               )}
             </TableRow>

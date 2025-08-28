@@ -51,7 +51,10 @@ export default function ProfileAccordion({ profile }: Props) {
                       {coupon.discountType}
                     </p>
                     <p className="text-tiny">
-                      Amount: ${coupon.discountAmount}
+                      Amount:
+                      {coupon.discountType != "FIXED_AMOUNT"
+                        ? "€" + coupon.discountAmount
+                        : coupon.discountValue + "%"}
                     </p>
                   </div>
                 }
