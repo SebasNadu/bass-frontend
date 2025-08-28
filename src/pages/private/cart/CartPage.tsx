@@ -87,12 +87,6 @@ export default function CartPage() {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [profile, setProfile] = useState<MemberProfileDTO | null>(null);
 
-  // Define the days array
-  const days = [
-    { name: "Kickoff!" },
-    // Add more days if needed
-  ];
-
   useEffect(() => {
     if (!token) return;
 
@@ -104,7 +98,7 @@ export default function CartPage() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          },
+          }
         );
         if (!response.ok) {
           throw new Error("Failed to fetch cart");
@@ -127,7 +121,7 @@ export default function CartPage() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          },
+          }
         );
         if (!response.ok) throw new Error("Failed to fetch user info");
         const data = await response.json();
@@ -144,7 +138,7 @@ export default function CartPage() {
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.meal.price * item.quantity,
-    0,
+    0
   );
 
   const selectedCoupon = coupons.find((c) => c.id === selectedCouponId);
@@ -163,39 +157,40 @@ export default function CartPage() {
     return totalAmount;
   })();
 
-  // Get the current day
   const getCurrentDay = () => {
     const today = new Date();
     const dayNames = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+      "SUNDAY", // changed to uppercase
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
     ];
     return dayNames[today.getDay()];
   };
 
-  // Check if the day matches any of the days in the array
-  const isTodaySpecialDay = (days: string[]) => {
+  const isTodaySpecialDay = (days: { dayOfWeek: string }[]) => {
     const currentDay = getCurrentDay();
-    return days.includes(currentDay);
+    console.log(currentDay);
+    console.log(days);
+    return days.some((day) => day.dayOfWeek.toUpperCase() === currentDay);
   };
 
   const handleOrder = async () => {
     const healthyCount = cartItems.filter((item) =>
-      item.meal.tags.some((tag) => tag.name === "Healthy"),
+      item.meal.tags.some((tag) => tag.name === "Healthy")
     ).length;
 
     const totalItems = cartItems.length;
 
-    // Get the special days (like "Kickoff!")
-    const specialDays = days.map((day) => day.name);
-
-    // If today is a special day, do not trigger the alert
-    if (healthyCount < totalItems / 2 && !isTodaySpecialDay(specialDays)) {
+    // If today is a special day, do not trigger the confirmation alert
+    if (
+      healthyCount < totalItems / 2 &&
+      profile &&
+      !isTodaySpecialDay(profile.days)
+    ) {
       setIsConfirmationOpen(true);
     } else {
       placeOrder();
@@ -224,7 +219,7 @@ export default function CartPage() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(paymentRequest),
-        },
+        }
       );
 
       if (!response.ok) {
@@ -352,7 +347,7 @@ export default function CartPage() {
                     <SelectItem
                       key={coupon.id.toString()}
                       textValue={`${coupon.displayName} ${formatDiscount(
-                        coupon,
+                        coupon
                       )}`}
                     >
                       {coupon.displayName} ({formatDiscount(coupon)})
