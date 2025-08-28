@@ -7,3 +7,6 @@ export * from "./NaturalSearchRequestDTO.ts";
 export * from "./NaturalSearchResponseDTO.ts";
 export * from "./OrderDTO.ts";
 export * from "./OrderItemDTO.ts";
+export * from "./AchievementDTO.ts";
+export * from "./CouponDTO.ts";
+export * from "./MemberProfileDTO.ts";
