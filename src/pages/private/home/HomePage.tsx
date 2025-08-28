@@ -26,8 +26,8 @@ export default function HomePage() {
   const [mealsByCategory, setMealsByCategory] = useState<{
     Healthy: MealResponseDTO[];
     Vegan: MealResponseDTO[];
-    "High-Protein": MealResponseDTO[];
-  }>({ Healthy: [], Vegan: [], "High-Protein": [] });
+    Fried: MealResponseDTO[];
+  }>({ Healthy: [], Vegan: [], Fried: [] });
 
   const [recommendations, setRecommendations] = useState<MealResponseDTO[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,7 +41,7 @@ export default function HomePage() {
 
       try {
         // Fetch categories in parallel
-        const categories = ["Healthy", "Vegan", "High-Protein"] as const;
+        const categories = ["Healthy", "Vegan", "Fried"] as const;
 
         const categoryResults = await Promise.all(
           categories.map(async (cat) => {
@@ -50,14 +50,14 @@ export default function HomePage() {
               throw new Error(`Meals (${cat}) failed: ${res.status}`);
             const data: MealResponseDTO[] = await res.json();
             return [cat, data.slice(0, 10)] as const;
-          })
+          }),
         );
 
         // Map results into object
         const categoryMap = Object.fromEntries(categoryResults) as {
           Healthy: MealResponseDTO[];
           Vegan: MealResponseDTO[];
-          "High-Protein": MealResponseDTO[];
+          Fried: MealResponseDTO[];
         };
         setMealsByCategory(categoryMap);
 
@@ -124,10 +124,7 @@ export default function HomePage() {
           {renderCarousel("Recommended For You", recommendations)}
           {renderCarousel("Healthy Meals", mealsByCategory.Healthy)}
           {renderCarousel("Vegan Meals", mealsByCategory.Vegan)}
-          {renderCarousel(
-            "High-Protein Meals",
-            mealsByCategory["High-Protein"]
-          )}
+          {renderCarousel("Fried Meals", mealsByCategory.Fried)}
         </>
       )}
     </div>
